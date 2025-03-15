@@ -40,7 +40,8 @@ dependencies:
   firebase_database:
   firebase_storage:
   google_maps_flutter:
-
+  permission_handler:
+  geolocator:
   lottie:
   animated_splash_screen:
 dev_dependencies:
