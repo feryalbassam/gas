@@ -1,6 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/login_screen.dart';
+import 'package:gas_on_go/welcome/welcome_page.dart';
 import 'package:lottie/lottie.dart';
 
 class AnimatedSplashScreenWidget extends StatelessWidget {
@@ -12,7 +13,7 @@ class AnimatedSplashScreenWidget extends StatelessWidget {
       splash: Center(
         child: Lottie.asset('assets/animation.json'),
       ),
-      nextScreen: LoginScreen(),
+      nextScreen: WelcomeScreen(),
       splashIconSize: 300,
       backgroundColor: Colors.white,
       duration: 4000,
