@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/login_screen.dart';
+import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
 
 class WelcomeScreen extends StatelessWidget {
   @override
@@ -45,7 +46,10 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/driverLogin');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginScreenDriver()));
               },
               child: Text("I am a Driver",
                   style: TextStyle(fontSize: 18, color: Colors.white)),

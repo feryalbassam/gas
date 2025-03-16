@@ -42,6 +42,7 @@ dependencies:
   google_maps_flutter:
   permission_handler:
   geolocator:
+  image_picker:
   lottie:
   animated_splash_screen:
 dev_dependencies:
