@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/login_screen.dart';
 import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
@@ -29,11 +30,15 @@ class _SignUpScreenState extends State<SignUpScreenDriver> {
   late bool securetext;
   CommonMethods cMethods = CommonMethods();
   XFile? imageFile;
+  String urlOfUploadedImage = "";
 
   checkIfNetworkIsAvailable() {
     cMethods.checkConnectivity(context);
-
-    signUpFormValidation();
+    if (imageFile != null) {
+      signUpFormValidation();
+    } else {
+      cMethods.displaySnackBar("Please choose image first", context);
+    }
   }
 
   signUpFormValidation() {
@@ -48,9 +53,28 @@ class _SignUpScreenState extends State<SignUpScreenDriver> {
     } else if (_passwordController.text.trim().length < 5) {
       cMethods.displaySnackBar(
           'Your password must be at least 6 characters or more.', context);
+    } else if (_truckModelController.text.trim().isEmpty) {
+      cMethods.displaySnackBar('Please enter your truck model.', context);
+    } else if (_truckColorController.text.trim().isEmpty) {
+      cMethods.displaySnackBar('Please enter your truck color.', context);
+    } else if (_truckNumberontroller.text.trim().isEmpty) {
+      cMethods.displaySnackBar('Please enter your truck number.', context);
     } else {
-      registerNewUser();
+      uploadImageToStorage();
     }
+  }
+
+  uploadImageToStorage() async {
+    String imageIDName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference referenceImage =
+        FirebaseStorage.instance.ref().child("Images").child(imageIDName);
+    UploadTask uploadTask = referenceImage.putFile(File(imageFile!.path));
+    TaskSnapshot snapshot = await uploadTask;
+    urlOfUploadedImage = await snapshot.ref.getDownloadURL();
+    setState(() {
+      urlOfUploadedImage;
+    });
+    registerNewDriver();
   }
 
   @override
@@ -59,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreenDriver> {
     super.initState();
   }
 
-  registerNewUser() async {
+  registerNewDriver() async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -84,14 +108,22 @@ class _SignUpScreenState extends State<SignUpScreenDriver> {
         .ref()
         .child('driver')
         .child(userFirebase!.uid);
-    Map userDataMap = {
+
+    Map driverTruckInfo = {
+      'truckColor': _truckColorController.text.trim(),
+      'truckModel': _truckModelController.text.trim(),
+      'truckNumber': _truckNumberontroller.text.trim(),
+    };
+    Map driverDataMap = {
+      'photo': urlOfUploadedImage,
+      'truck_details': driverTruckInfo,
       'name': _usernameController.text.trim(),
       'email': _emailController.text.trim(),
       'phone': _phoneController.text.trim(),
       'id': userFirebase.uid,
       'blockStatus': 'no',
     };
-    usersRef.set(userDataMap);
+    usersRef.set(driverDataMap);
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => Dashboard()));
   }
