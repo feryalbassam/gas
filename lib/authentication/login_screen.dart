@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/signup_screen.dart';
 import 'package:gas_on_go/gloabl/global_var.dart';
+import 'package:gas_on_go/welcome/welcome_page.dart';
 
 import '../methods/common_methods.dart';
 import '../pages/home_page.dart';
@@ -94,6 +95,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          WelcomeScreen())); // Go back to the previous screen
+            },
+          ),
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(10),

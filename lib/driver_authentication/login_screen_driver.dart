@@ -2,9 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/driver_authentication/signup_screen_driver.dart';
-import 'package:gas_on_go/pages/dashboard.dart';
+import 'package:gas_on_go/driver_pages/dashboard.dart';
 import '../gloabl/global_var.dart';
 import '../methods/common_methods.dart';
+import '../welcome/welcome_page.dart';
 import '../widgets/loading_dialog.dart';
 
 class LoginScreenDriver extends StatefulWidget {
@@ -93,6 +94,18 @@ class _LoginScreenDriverState extends State<LoginScreenDriver> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          WelcomeScreen())); // Go back to the previous screen
+            },
+          ),
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(10),
