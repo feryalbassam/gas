@@ -16,7 +16,7 @@ class _HomedriverPageState extends State<HomedriverPage> {
         child: Text(
           'home',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 24,
           ),
         ),

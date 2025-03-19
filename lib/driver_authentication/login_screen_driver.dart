@@ -98,11 +98,8 @@ class _LoginScreenDriverState extends State<LoginScreenDriver> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          WelcomeScreen())); // Go back to the previous screen
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
             },
           ),
         ),

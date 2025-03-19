@@ -16,7 +16,7 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
         child: Text(
           'profile',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: 24,
           ),
         ),
