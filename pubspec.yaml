@@ -45,6 +45,8 @@ dependencies:
   image_picker:
   lottie:
   animated_splash_screen:
+  google_fonts: ^6.1.0
+  shimmer: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
