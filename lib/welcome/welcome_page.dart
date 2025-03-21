@@ -1,62 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/login_screen.dart';
 import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:shimmer/shimmer.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  double _opacity = 0.0;
+  bool _showShimmer = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _opacity = 1.0;
+      });
+    });
+
+
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _showShimmer = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFD5E4FB),
-      // Your preferred color
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Welcome!",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 15, 15, 41),
-              ),
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF2566CE),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+      backgroundColor: const Color(0xFFD5E4FB),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 50),
+          Center(
+            child: Column(
+              children: [
+
+                AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(seconds: 2),
+                  curve: Curves.easeInOut,
+                  child: Image.asset(
+                    "assets/gasongo_logo2-removebg-preview.png",
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-              onPressed: () {
-                Navigator.push(context,
+
+                const SizedBox(height: 10),
+
+
+                AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(seconds: 2),
+                  child: _showShimmer
+                      ? Shimmer.fromColors(
+                    baseColor: Colors.black87,
+                    highlightColor: Colors.grey[300]!,
+                    period: const Duration(seconds: 2),
+                    child: Text(
+                      "Because Every Flame Deserves Fast Fuel",
+                      style: GoogleFonts.quicksand(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  )
+                      : Text(
+                    "Because Every Flame Deserves Fast Fuel",
+                    style: GoogleFonts.quicksand(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // Customer Button
+                AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(seconds: 2),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2566CE),
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 5,
+                      shadowColor: Colors.black45,
+                    ),
+                    onPressed: () {
+                    Navigator.push(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-              child: Text("I am a User",
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF548FED),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                    },
+                    child: const Text(
+                      "Get Gas Now",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginScreenDriver()));
-              },
-              child: Text("I am a Driver",
-                  style: TextStyle(fontSize: 18, color: Colors.white)),
+
+                const SizedBox(height: 20),
+
+                //  Seller Button
+                AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(seconds: 2),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF548FED),
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 5,
+                      shadowColor: Colors.black45,
+                    ),
+                    onPressed: () {
+                     context,
+                    MaterialPageRoute(builder: (context) => LoginScreenDriver()));
+                    },
+                    child: const Text(
+                      "Start Selling Gas",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
+
