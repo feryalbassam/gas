@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "556509636330",
+    "firebase_url": "https://gasongo-94c57-default-rtdb.firebaseio.com",
     "project_id": "gasongo-94c57",
     "storage_bucket": "gasongo-94c57.firebasestorage.app"
   },
