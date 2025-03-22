@@ -17,13 +17,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void initState() {
     super.initState();
 
-
     Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         _opacity = 1.0;
       });
     });
-
 
     Future.delayed(const Duration(seconds: 3), () {
       setState(() {
@@ -43,7 +41,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Center(
             child: Column(
               children: [
-
                 AnimatedOpacity(
                   opacity: _opacity,
                   duration: const Duration(seconds: 2),
@@ -57,7 +54,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
 
                 const SizedBox(height: 10),
-
 
                 AnimatedOpacity(
                   opacity: _opacity,
@@ -103,8 +99,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       shadowColor: Colors.black45,
                     ),
                     onPressed: () {
-                    Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
                     },
                     child: const Text(
                       "Get Gas Now",
@@ -115,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                 const SizedBox(height: 20),
 
-                //  Seller Button
+                // Seller Button
                 AnimatedOpacity(
                   opacity: _opacity,
                   duration: const Duration(seconds: 2),
@@ -130,8 +128,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       shadowColor: Colors.black45,
                     ),
                     onPressed: () {
-                     context,
-                    MaterialPageRoute(builder: (context) => LoginScreenDriver()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreenDriver()),
+                      );
                     },
                     child: const Text(
                       "Start Selling Gas",
@@ -147,5 +147,3 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
-
-

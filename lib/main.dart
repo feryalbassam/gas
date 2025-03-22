@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:gas_on_go/pages/order_placement.dart';
 import 'package:gas_on_go/pages/order_tracking_screen.dart';
 import 'package:gas_on_go/pages/profile_screen.dart';
+import 'package:gas_on_go/pages/Order_history.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: AnimatedSplashScreenWidget(),
+      home: OrderScreen(),
     );
   }
 }
