@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: OrderScreen(),
+      home: AnimatedSplashScreenWidget(),
     );
   }
 }
