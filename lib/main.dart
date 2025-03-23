@@ -1,7 +1,9 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:gas_on_go/driver_pages/dashboard.dart';
 import 'package:gas_on_go/splash_screen.dart';
+import 'package:gas_on_go/welcome/welcome_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/pages/order_placement.dart';
@@ -24,7 +26,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light().copyWith(
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: AnimatedSplashScreenWidget(),
+      home: Dashboard(),
     );
   }
 }
