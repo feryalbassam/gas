@@ -24,7 +24,7 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
         .doc(userId)
         .collection('user_notifications')
         .add({
-      'title': 'Your order #$orderId has been placed ✅',
+      'title': 'Order #$orderId is confirmed and being prepared 🚚',
       'body': 'Tap to track your order.',
       'orderId': orderId,
       'timestamp': Timestamp.now(),
