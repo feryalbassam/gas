@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gas_on_go/gloabl/global_var.dart';
@@ -16,7 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final Completer<GoogleMapController> googleMapCompleterController =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
   GoogleMapController? controllerGoogleMap;
   Position? currentPositionOfUsers;
 
@@ -37,6 +39,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   getCurrentLiveLocationOfUser() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+
     Position positionOfUser = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation);
     currentPositionOfUsers = positionOfUser;
@@ -44,30 +48,45 @@ class _HomePageState extends State<HomePage> {
     LatLng positionOfUserInLatLng = LatLng(
         currentPositionOfUsers!.latitude, currentPositionOfUsers!.longitude);
     CameraPosition cameraPosition =
-        CameraPosition(target: positionOfUserInLatLng, zoom: 15);
+    CameraPosition(target: positionOfUserInLatLng, zoom: 15);
     controllerGoogleMap!
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    saveLocationToFirestore(positionOfUser);
+  }
+
+  void saveLocationToFirestore(Position position) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'location': {
+          'lat': position.latitude,
+          'lng': position.longitude,
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          body: Stack(
-        children: [
-          GoogleMap(
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            initialCameraPosition: googlePlexInitialPosition,
-            onMapCreated: (GoogleMapController mapController) {
-              controllerGoogleMap = mapController;
-              updateMapTheme(controllerGoogleMap!);
-              googleMapCompleterController.complete(controllerGoogleMap);
-              getCurrentLiveLocationOfUser();
-            },
-          )
-        ],
-      )),
+        body: Stack(
+          children: [
+            GoogleMap(
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              initialCameraPosition: googlePlexInitialPosition,
+              onMapCreated: (GoogleMapController mapController) {
+                controllerGoogleMap = mapController;
+                updateMapTheme(controllerGoogleMap!);
+                googleMapCompleterController.complete(controllerGoogleMap);
+                getCurrentLiveLocationOfUser();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "536334599840",
+    "firebase_url": "https://gasongo-5224c-default-rtdb.firebaseio.com",
+    "project_id": "gasongo-5224c",
+    "storage_bucket": "gasongo-5224c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536334599840:android:19430e594b7be3c7dbebc5",
+        "android_client_info": {
+          "package_name": "com.ffsh.gasongo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB71pkEImhTfNwLj6_vLGvC3GGDFVNWQN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

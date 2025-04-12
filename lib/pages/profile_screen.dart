@@ -1,188 +1,209 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path_provider/path_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  File? _imageFile;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+    uploadAssetImageToFirebase('assets/gas.png');
+  }
+
+  Future<void> fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        setState(() {
+          userData = doc.data();
+        });
+      }
+    }
+  }
+
+  Future<void> pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _imageFile = File(pickedFile.path);
+      await uploadImageToFirebase(_imageFile!);
+    }
+  }
+
+  Future<void> uploadImageToFirebase(File imageFile) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('profile_pictures')
+        .child('${user.uid}.jpg');
+
+    await ref.putFile(imageFile);
+    final downloadURL = await ref.getDownloadURL();
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'photoUrl': downloadURL,
+    });
+
+    setState(() {
+      userData?['photoUrl'] = downloadURL;
+    });
+  }
+
+  Future<void> uploadAssetImageToFirebase(String assetPath) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('profile_pictures')
+        .child('${user.uid}.jpg');
+
+
+    try {
+      await ref.getDownloadURL();
+      print("✅ ");
+      return;
+    } catch (_) {
+      print("⬆️  assets...");
+    }
+
+    final byteData = await rootBundle.load(assetPath);
+    final tempFile = File('${(await getTemporaryDirectory()).path}/temp_profile.png');
+    await tempFile.writeAsBytes(byteData.buffer.asUint8List());
+
+    await ref.putFile(tempFile);
+    final downloadURL = await ref.getDownloadURL();
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'photoUrl': downloadURL,
+    });
+
+    setState(() {
+      userData?['photoUrl'] = downloadURL;
+    });
+
+    print("✅ Firestore");
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (userData == null) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF114195)),
+        ),
+      );
+    }
+
+    final name = userData!['name'] ?? 'Guest';
+    final email = userData!['email'] ?? 'No email';
+    final accountType = userData!['accountType'] ?? 'User';
+    final photoUrl = userData!['photoUrl'] ?? 'https://via.placeholder.com/150';
+
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        title: Text("Profile"),
-        centerTitle: true,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.settings_rounded)),
-        ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.all(10),
-        children: [
-          Column(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_MblgVXEbYWCyEckNrMa81SVPib-3RpUq5A&s",
+      backgroundColor: const Color(0xFFF6F8FC),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                CircleAvatar(
+                  radius: 55,
+                  backgroundImage: _imageFile != null
+                      ? FileImage(_imageFile!)
+                      : NetworkImage(photoUrl) as ImageProvider,
+                  backgroundColor: Colors.grey[200],
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Rachael wagner",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold
-                ),
-              ),
-              Text("Junior Product Designer")
-            ],
-          ),
-          SizedBox(height: 25),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: Text(
-                  "complete your profile",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Text("(1/5)", style: TextStyle(color: Color(0xFF114195))),
-            ],
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: List.generate(5, (index) {
-              return Expanded(
-                child: Container(
-                  height: 7,
-                  width: 10,
-                  margin: EdgeInsets.only(right: index == 4 ? 0 : 6),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: index == 0 ? Color(0xFF114195) : Colors.black12,
-                  ),
-                ),
-              );
-            }),
-          ),
-
-          SizedBox(
-            height: 180,
-            child: ListView.separated(
-              physics: BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final card = profileCompletionCards[index];
-                return SizedBox(
-                  width: 160,
-
-                  child: Card(
-                    shadowColor: Colors.black12,
-                    child: Padding(
-                      padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          Icon(card.icon, size: 30,color: Color(0xFF114195)),
-                          SizedBox(height: 10),
-                          Text(card.title, textAlign: TextAlign.center),
-
-                          Spacer(),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              backgroundColor: Color(0xFF114195),
-                            ),
-                            child: Text(card.buttonText,style: TextStyle(color: Colors.white),),
-                          ),
-                        ],
+                Positioned(
+                  bottom: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: pickImage,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
                       ),
+                      child: const Icon(Icons.edit, color: Color(0xFF114195), size: 20),
                     ),
                   ),
-                );
-              },
-              separatorBuilder:
-                  (context, index) =>
-                  Padding(padding: EdgeInsets.only(right: 5)),
-              itemCount: profileCompletionCards.length,
+                ),
+              ],
             ),
-          ),
-          SizedBox(height: 35),
-          ...List.generate(customListTiles.length, (index) {
-            final tile = customListTiles[index];
-            return Card(
-              elevation: 4,
-              shadowColor: Colors.black12,
-              child: ListTile(
-                leading: Icon(tile.icon,color: Color(0xFF114195)),
-                title: Text(tile.title),
-                trailing: Icon(Icons.chevron_right),
+            const SizedBox(height: 16),
+            Text(name,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
+            Text(accountType,
+                style: const TextStyle(fontSize: 16, color: Colors.grey)),
+            const SizedBox(height: 40),
+            _buildOptionTile(context, Icons.person_outline, "Edit Profile", '/edit_profile'),
+            _buildOptionTile(context, Icons.notifications_none_outlined, "Notification", '/notification'),
+            _buildOptionTile(context, Icons.location_on_outlined, "Shipping Address", '/shipping_address'),
+            _buildOptionTile(context, Icons.lock_outline, "Change Password", '/change_password'),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text("Sign Out", style: TextStyle(fontSize: 16, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF114195),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                elevation: 6,
               ),
-            );
-          }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile(BuildContext context, IconData icon, String title, String route) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          )
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "messages"),
-
-          BottomNavigationBarItem(icon: Icon(Icons.book), label: "Discover"),
-
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "profile"),
-        ],
+      child: ListTile(
+        leading: Icon(icon, color: Color(0xFF114195)),
+        title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => Navigator.pushNamed(context, route),
       ),
     );
   }
 }
-
-class ProfileCompletionCard {
-  final String title;
-  final String buttonText;
-  final IconData icon; // Changed from imageUrl to IconData
-
-  ProfileCompletionCard({
-    required this.title,
-    required this.buttonText,
-    required this.icon,
-
-  });
-}
-
-List<ProfileCompletionCard> profileCompletionCards = [
-  ProfileCompletionCard(
-    title: "Set Your Profile Details",
-    icon: CupertinoIcons.person_circle, // Correct usage
-    buttonText: "Continue",
-  ),
-  ProfileCompletionCard(
-    title: "Upload Your Resume",
-    icon: CupertinoIcons.doc,
-    buttonText: "Upload",
-  ),
-  ProfileCompletionCard(
-    title: "Set Your Profile Details",
-    icon: CupertinoIcons.square_list, // Fix typo (Cupertion -> Cupertino)
-    buttonText: "Add",
-  ),
-];
-
-class CustomListTile {
-  final IconData icon;
-  final String title;
-
-  CustomListTile({required this.icon, required this.title});
-}
-
-List<CustomListTile> customListTiles = [
-  CustomListTile(icon: Icons.insights, title: "Activity"),
-  CustomListTile(icon: Icons.location_on_outlined, title: "location"),
-  CustomListTile(title: "Notifications", icon: CupertinoIcons.bell),
-  CustomListTile(title: "logout", icon: CupertinoIcons.arrow_right_arrow_left),
-];

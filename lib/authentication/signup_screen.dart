@@ -1,3 +1,6 @@
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -21,19 +24,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late bool securetext;
   CommonMethods cMethods = CommonMethods();
 
+  // ✅ نوع الحساب
+  String _selectedAccountType = 'user';
+  final List<String> _accountTypes = ['user', 'driver'];
+
   checkIfNetworkIsAvailable() {
     cMethods.checkConnectivity(context);
-
     signUpFormValidation();
   }
 
   signUpFormValidation() {
     if (_usernameController.text.trim().length < 3) {
       cMethods.displaySnackBar(
-          'Your name must be at least 4 0r more characters.', context);
+          'Your name must be at least 4 or more characters.', context);
     } else if (_phoneController.text.trim().length < 7) {
       cMethods.displaySnackBar(
-          'Your phone must be at least 8 0r more characters.', context);
+          'Your phone must be at least 8 or more characters.', context);
     } else if (!_emailController.text.contains('@')) {
       cMethods.displaySnackBar('Please write valid email.', context);
     } else if (_passwordController.text.trim().length < 5) {
@@ -58,31 +64,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
           LoadingDialog(messageText: 'Registering your account...'),
     );
 
-    final User? userFirebase = (await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    )
-            .catchError((errorMsg) {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      User? userFirebase = userCredential.user;
+
+      if (userFirebase != null) {
+        Map<String, dynamic> userDataMap = {
+          'name': _usernameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'id': userFirebase.uid,
+          'blockStatus': 'no',
+          'accountType': _selectedAccountType,
+          'photoUrl': 'https://i.pravatar.cc/150?img=${DateTime.now().millisecondsSinceEpoch % 70}',
+        };
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userFirebase.uid)
+            .set(userDataMap);
+
+        DatabaseReference usersRef = FirebaseDatabase.instance
+            .ref()
+            .child('users')
+            .child(userFirebase.uid);
+
+        usersRef.set(userDataMap);
+
+        if (!context.mounted) return;
+        Navigator.pop(context);
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
+    } catch (errorMsg) {
       Navigator.pop(context);
       cMethods.displaySnackBar(errorMsg.toString(), context);
-    }))
-        .user;
-    if (!context.mounted) return;
-    Navigator.pop(context);
-
-    DatabaseReference usersRef =
-        FirebaseDatabase.instance.ref().child('users').child(userFirebase!.uid);
-    Map userDataMap = {
-      'name': _usernameController.text.trim(),
-      'email': _emailController.text.trim(),
-      'phone': _phoneController.text.trim(),
-      'id': userFirebase.uid,
-      'blockStatus': 'no',
-    };
-    usersRef.set(userDataMap);
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+    }
   }
 
   @override
@@ -102,200 +125,125 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       fontSize: 26,
                       fontWeight: FontWeight.bold),
                 ),
-                //text fields
                 Padding(
                   padding: const EdgeInsets.all(22),
                   child: Column(
                     children: [
-                      TextField(
-                        controller: _usernameController,
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.person,
-                            color: Color.fromARGB(255, 188, 186, 186),
-                          ),
-                          labelText: 'Name',
-                          labelStyle: const TextStyle(
-                            fontSize: 17,
-                            color: Color.fromARGB(255, 195, 193, 193),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 188, 186, 186),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.phone,
-                            color: Color.fromARGB(255, 188, 186, 186),
-                          ),
-                          labelText: 'phone',
-                          labelStyle: const TextStyle(
-                            fontSize: 17,
-                            color: Color.fromARGB(255, 195, 193, 193),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 188, 186, 186),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.email,
-                            color: Color.fromARGB(255, 188, 186, 186),
-                          ),
-                          labelText: 'Email',
-                          labelStyle: const TextStyle(
-                            fontSize: 17,
-                            color: Color.fromARGB(255, 195, 193, 193),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 188, 186, 186),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      buildTextField(
+                          controller: _usernameController,
+                          label: 'Name',
+                          icon: Icons.person),
+                      const SizedBox(height: 10),
+                      buildTextField(
+                          controller: _phoneController,
+                          label: 'Phone',
+                          icon: Icons.phone),
+                      const SizedBox(height: 10),
+                      buildTextField(
+                          controller: _emailController,
+                          label: 'Email',
+                          icon: Icons.email),
+                      const SizedBox(height: 10),
                       TextField(
                         controller: _passwordController,
                         obscureText: securetext,
-                        keyboardType: TextInputType.visiblePassword,
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(
-                            Icons.password,
-                            color: Color.fromARGB(255, 188, 186, 186),
-                          ),
+                          prefixIcon: const Icon(Icons.password),
                           suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  securetext = !securetext;
-                                });
-                              },
-                              icon: securetext == true
-                                  ? const Icon(
-                                      Icons.visibility_off,
-                                      color: Color.fromARGB(255, 188, 186, 186),
-                                    )
-                                  : const Icon(
-                                      Icons.visibility,
-                                      color: Color.fromARGB(255, 188, 186, 186),
-                                    )),
+                            onPressed: () {
+                              setState(() {
+                                securetext = !securetext;
+                              });
+                            },
+                            icon: Icon(
+                              securetext
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
                           labelText: 'Password',
-                          labelStyle: const TextStyle(
-                            fontSize: 17,
-                            color: Color.fromARGB(255, 195, 193, 193),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 195, 193, 193),
-                            ),
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 188, 186, 186),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // ✅ Dropdown لاختيار نوع الحساب
+                      DropdownButtonFormField<String>(
+                        value: _selectedAccountType,
+                        items: _accountTypes.map((type) {
+                          return DropdownMenuItem(
+                            value: type,
+                            child: Text(type[0].toUpperCase() + type.substring(1)),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAccountType = value!;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Account Type',
+                          prefixIcon: Icon(Icons.account_circle),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+
+                      const SizedBox(height: 20),
                       ElevatedButton(
-                          onPressed: () {
-                            checkIfNetworkIsAvailable();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 15, 15, 41),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            padding: const EdgeInsets.only(
-                                left: 40, right: 40, top: 13, bottom: 13),
-                            elevation: 5,
-                          ),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 188, 186, 186),
-                                fontSize: 17),
-                          )),
+                        onPressed: () {
+                          checkIfNetworkIsAvailable();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          const Color.fromARGB(255, 15, 15, 41),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 13),
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 188, 186, 186),
+                              fontSize: 17),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()));
-                    },
-                    child: Text(
-                      'Already have an Account? Login Here',
-                      style:
-                          TextStyle(color: Color.fromARGB(255, 41, 107, 211)),
-                    ))
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                  child: const Text(
+                    'Already have an Account? Login Here',
+                    style: TextStyle(color: Color.fromARGB(255, 41, 107, 211)),
+                  ),
+                )
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildTextField(
+      {required TextEditingController controller,
+        required String label,
+        required IconData icon}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       ),
     );
   }
