@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-import '../gloabl/global_var.dart';
+import 'package:gas_on_go/gloabl/global_var.dart';
 
 class HomedriverPage extends StatefulWidget {
   const HomedriverPage({super.key});
@@ -28,7 +25,7 @@ class _HomedriverPageState extends State<HomedriverPage> {
   }
 
   Future<String> getJsonFileFromThemes(String mapStylePath) async {
-    var byteData = await rootBundle.load(mapStylePath);
+    ByteData byteData = await rootBundle.load(mapStylePath);
     var list = byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
     return utf8.decode(list);
