@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/driver_pages/dashboard.dart';
 import 'package:gas_on_go/driver_pages/homedriver_page.dart';
+import 'package:gas_on_go/firebase_options.dart';
 import 'package:gas_on_go/pages/home_page.dart';
 import 'package:gas_on_go/splash_screen.dart';
 import 'package:gas_on_go/welcome/welcome_page.dart';
@@ -16,16 +17,7 @@ import 'package:gas_on_go/pages/Order_history.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "AIzaSyDIznY77np-iMDAhzZJr4pULXPubnzQAsc",
-      authDomain: "gas-on-go-c7d9f.firebaseapp.com",
-      projectId: "gas-on-go-c7d9f",
-      storageBucket: "gas-on-go-c7d9f.firebasestorage.app",
-      messagingSenderId: "317964607749",
-      appId: "1:317964607749:web:d7ec31cb206a51f8bf576c",
-      measurementId: "G-9MZTQF5G4E",
-      databaseURL: "https://gas-on-go-c7d9f-default-rtdb.firebaseio.com",
-    ),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   await Permission.locationWhenInUse.isDenied.then((valueofPermission) {
