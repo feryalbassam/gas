@@ -91,6 +91,7 @@ class _SignUpScreenState extends State<SignUpScreenDriver> {
       'blockStatus': 'no',
     };
     usersRef.set(driverDataMap);
+
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => Dashboard()));
   }

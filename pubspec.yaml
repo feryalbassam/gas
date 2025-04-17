@@ -37,19 +37,22 @@ dependencies:
   connectivity_plus:
   firebase_core: ^3.12.1
   firebase_auth:
-  firebase_database:
-  firebase_storage:
-  google_maps_flutter:
+  cloud_firestore: ^5.6.5
+  firebase_database: ^11.3.4
+  firebase_storage: ^12.4.4
+  google_maps_flutter: ^2.12.0
   permission_handler:
   geolocator:
-  image_picker:
+  image_picker: ^1.1.2
   lottie:
   animated_splash_screen:
   google_fonts: ^6.1.0
   shimmer: ^2.0.0
   flutter_polyline_points: ^2.1.0
   location: ^8.0.0
-  
+  url_launcher: ^6.3.1
+  fl_chart: ^0.63.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -3,6 +3,7 @@ import 'package:gas_on_go/driver_pages/earnings_page.dart';
 import 'package:gas_on_go/driver_pages/homedriver_page.dart';
 import 'package:gas_on_go/driver_pages/profiledriver_page.dart';
 import 'package:gas_on_go/driver_pages/trips_page.dart';
+import 'package:gas_on_go/pages/profile_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -13,6 +14,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
+  //bool isDriver = true;
   late TabController controller;
   int indexSelected = 0;
 
@@ -42,11 +44,14 @@ class _DashboardState extends State<Dashboard>
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           controller: controller,
-          children: const [
+          children:  [
             HomedriverPage(),
             EarningsPage(),
             TripsPage(),
-            ProfiledriverPage(),
+            //ProfiledriverPage(),
+            //ProfileScreen(),
+            //isDriver ? ProfiledriverPage() : ProfileScreen(),
+            ProfileScreen(),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

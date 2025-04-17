@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1034623805678",
+    "project_id": "gas-on-go-31b4f",
+    "storage_bucket": "gas-on-go-31b4f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1034623805678:android:0abc39b7ee7a48c8ffabff",
+        "android_client_info": {
+          "package_name": "com.ffsh.gasongo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0oVjXfLz4fl_0jUI4cmPzVe38GpACajI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
