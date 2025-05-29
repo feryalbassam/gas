@@ -1,42 +1,43 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_pages/changedriverpassword.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
 
-import 'editdriverprofilescreen.dart';
+import '../authentication/login_screen.dart';
+import '../driver_pages/changedriverpassword.dart';
+import 'edit_profile_page.dart';
+import 'notification_page.dart';
 
-class ProfiledriverPage extends StatefulWidget {
-  const ProfiledriverPage({Key? key}) : super(key: key);
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<ProfiledriverPage> createState() => _ProfiledriverPageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfiledriverPageState extends State<ProfiledriverPage> {
+class _ProfilePageState extends State<ProfilePage> {
   File? _imageFile;
-  Map? driverData;
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
-    fetchDriverData();
+    fetchUserData();
   }
 
-  Future<void> fetchDriverData() async {
+  Future<void> fetchUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final ref =
-        FirebaseDatabase.instance.ref().child('drivers').child(user.uid);
-    final snapshot = await ref.get();
-
-    if (snapshot.exists) {
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    if (doc.exists) {
       setState(() {
-        driverData = snapshot.value as Map?;
+        userData = doc.data();
       });
     }
   }
@@ -48,19 +49,18 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked != null) {
       _imageFile = File(picked.path);
-      final ref = FirebaseStorage.instance
-          .ref('profile_pictures')
-          .child('${user.uid}.jpg');
+      final ref =
+          FirebaseStorage.instance.ref('profile_pictures/${user.uid}.jpg');
       await ref.putFile(_imageFile!);
       final url = await ref.getDownloadURL();
 
-      await FirebaseDatabase.instance
-          .ref('drivers')
-          .child(user.uid)
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
           .update({'photoUrl': url});
 
       setState(() {
-        driverData?['photoUrl'] = url;
+        userData?['photoUrl'] = url;
       });
     }
   }
@@ -70,14 +70,14 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreenDriver()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (driverData == null) {
+    if (userData == null) {
       return const Scaffold(
         backgroundColor: Colors.white,
         body: Center(
@@ -87,21 +87,21 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
       );
     }
 
-    final name = driverData?['name'] ?? 'Driver';
-    final email = driverData?['email'] ?? 'No email';
-    final phone = driverData?['phone'] ?? 'No phone';
-    final photoUrl = driverData?['photoUrl'];
+    final name = userData?['name'] ?? 'User';
+    final email = userData?['email'] ?? 'No email';
+    final phone = userData?['phone'] ?? 'No phone';
+    final photoUrl = userData?['photoUrl'];
 
     final imageProvider = _imageFile != null
         ? FileImage(_imageFile!)
         : (photoUrl != null
             ? NetworkImage(photoUrl)
-            : const AssetImage('assets/man.png')) as ImageProvider;
+            : const AssetImage('assets/gas.png')) as ImageProvider;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FC),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 15, 15, 41),
+        backgroundColor: const Color.fromARGB(255, 15, 15, 41),
         automaticallyImplyLeading: false,
         title: const Text("Profile",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -145,75 +145,45 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
             Text(name,
                 style:
                     const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const Text("Seller",
+            const Text("User",
                 style: TextStyle(fontSize: 16, color: Colors.grey)),
             const SizedBox(height: 30),
             _buildInfoTile(Icons.email, email),
             _buildInfoTile(Icons.phone, phone),
+
+            // ✅ زر Edit Profile
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const EditProfilePage()));
+              },
+              child: _buildActionTile(Icons.person_outline, "Edit Profile"),
+            ),
+
+            // ✅ زر Change Password
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const ChangePasswordScreen()));
+              },
+              child: _buildActionTile(Icons.lock_outline, "Change Password"),
+            ),
+
+            // ✅ زر Notifications
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const EditDriverProfileScreen()),
+                  MaterialPageRoute(builder: (_) => const NotificationsPage()),
                 );
               },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white, // Same as name/email tiles
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.person_outline,
-                        color: Color.fromARGB(255, 15, 15, 41)),
-                    SizedBox(width: 20),
-                    Text(
-                      "Edit Profile",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    Spacer(),
-                    Icon(Icons.chevron_right,
-                        color: Color.fromARGB(255, 15, 15, 41)),
-                  ],
-                ),
-              ),
+              child: _buildActionTile(
+                  Icons.notifications_none, "My Notifications"),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const ChangePasswordScreen()),
-                );
-              },
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.lock_outline,
-                        color: Color.fromARGB(255, 15, 15, 41)),
-                    SizedBox(width: 20),
-                    Text(
-                      "Change Password",
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    Spacer(),
-                    Icon(Icons.chevron_right,
-                        color: Color.fromARGB(255, 15, 15, 41)),
-                  ],
-                ),
-              ),
-            ),
+
+            // ✅ زر تسجيل الخروج
             ElevatedButton.icon(
               onPressed: signOut,
               icon: const Icon(Icons.logout, color: Colors.white),
@@ -242,21 +212,40 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(0, 3),
-          )
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3))
         ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Color.fromARGB(255, 15, 15, 41)),
+          Icon(icon, color: const Color.fromARGB(255, 15, 15, 41)),
           const SizedBox(width: 16),
           Expanded(
               child: Text(value,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w500))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionTile(IconData icon, String title) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color.fromARGB(255, 15, 15, 41)),
+          const SizedBox(width: 20),
+          Text(title,
+              style: const TextStyle(fontSize: 16, color: Colors.black)),
+          const Spacer(),
+          const Icon(Icons.chevron_right,
+              color: Color.fromARGB(255, 15, 15, 41)),
         ],
       ),
     );

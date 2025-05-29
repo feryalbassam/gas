@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_pages/earnings_page.dart';
+import 'package:gas_on_go/driver_pages/inventory_page.dart';
 import 'package:gas_on_go/driver_pages/homedriver_page.dart';
 import 'package:gas_on_go/driver_pages/profiledriver_page.dart';
-import 'package:gas_on_go/driver_pages/trips_page.dart';
-import 'package:gas_on_go/pages/profile_screen.dart';
+import 'package:gas_on_go/driver_pages/earning_page.dart';
+import 'package:gas_on_go/user_pages/home_page.dart';
+import 'package:gas_on_go/user_pages/order_tracking_screen.dart';
+import 'package:gas_on_go/user_pages/profile.dart';
+import 'package:gas_on_go/user_pages/profile_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -28,7 +31,7 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 4, vsync: this);
+    controller = TabController(length: 2, vsync: this); // ✅ Match to 2 pages
   }
 
   @override
@@ -44,28 +47,19 @@ class _DashboardState extends State<Dashboard>
         body: TabBarView(
           physics: const NeverScrollableScrollPhysics(),
           controller: controller,
-          children:  [
-            HomedriverPage(),
-            EarningsPage(),
-            TripsPage(),
-            //ProfiledriverPage(),
-            //ProfileScreen(),
-            //isDriver ? ProfiledriverPage() : ProfileScreen(),
-            ProfileScreen(),
+          children: [
+            HomePage(),
+            ProfilePage(),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.credit_card), label: 'Earnings'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.account_tree), label: 'Trips'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
           currentIndex: indexSelected,
           unselectedItemColor: Color.fromARGB(255, 188, 186, 186),
-          selectedItemColor: Color.fromARGB(255, 41, 107, 211),
+          selectedItemColor: Color.fromARGB(255, 15, 15, 41),
           showSelectedLabels: true,
           selectedLabelStyle: const TextStyle(fontSize: 18),
           type: BottomNavigationBarType.fixed,

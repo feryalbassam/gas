@@ -1,6 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gas_on_go/authentication/login_screen.dart';
 import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
+import 'package:gas_on_go/driver_pages/driverdashboard.dart';
+import 'package:gas_on_go/driver_pages/homedriver_page.dart';
+import 'package:gas_on_go/pages/map.dart';
+import 'package:gas_on_go/user_pages/Dashboard.dart';
+import 'package:gas_on_go/user_pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -60,26 +66,26 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   duration: const Duration(seconds: 2),
                   child: _showShimmer
                       ? Shimmer.fromColors(
-                    baseColor: Colors.black87,
-                    highlightColor: Colors.grey[300]!,
-                    period: const Duration(seconds: 2),
-                    child: Text(
-                      "Because Every Flame Deserves Fast Fuel",
-                      style: GoogleFonts.quicksand(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  )
+                          baseColor: Colors.black87,
+                          highlightColor: Colors.grey[300]!,
+                          period: const Duration(seconds: 2),
+                          child: Text(
+                            "Because Every Flame Deserves Fast Fuel",
+                            style: GoogleFonts.quicksand(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        )
                       : Text(
-                    "Because Every Flame Deserves Fast Fuel",
-                    style: GoogleFonts.quicksand(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                  ),
+                          "Because Every Flame Deserves Fast Fuel",
+                          style: GoogleFonts.quicksand(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        ),
                 ),
 
                 const SizedBox(height: 40),
@@ -91,7 +97,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2566CE),
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -101,7 +108,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                FirebaseAuth.instance.currentUser == null
+                                    ? LoginScreen()
+                                    : Dashboard()),
                       );
                     },
                     child: const Text(
@@ -120,7 +131,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF548FED),
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -130,7 +142,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreenDriver()),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                FirebaseAuth.instance.currentUser == null
+                                    ? LoginScreenDriver()
+                                    : Driverdashboard()),
                       );
                     },
                     child: const Text(

@@ -19,8 +19,8 @@ class _PaymentPageState extends State<PaymentPage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text("Choose Payment Method"),
-        backgroundColor: const Color(0xFF114195),
+        title: const Text("Payment Preference"),
+        backgroundColor: const Color(0xFF0F0F29),
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 4,
@@ -48,16 +48,21 @@ class _PaymentPageState extends State<PaymentPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                icon:
+                    const Icon(Icons.check_circle_outline, color: Colors.white),
                 onPressed: _handleContinue,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF114195),
+                  backgroundColor: const Color(0xFF0F0F29),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 label: const Text(
                   "Continue",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             )
@@ -85,24 +90,26 @@ class _PaymentPageState extends State<PaymentPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: isSelected ? const Color(0xFF114195).withOpacity(0.08) : Colors.white,
+          color: isSelected
+              ? const Color(0xFF0F0F29).withOpacity(0.08)
+              : Colors.white,
           border: Border.all(
-            color: isSelected ? const Color(0xFF114195) : Colors.grey.shade300,
+            color: isSelected ? const Color(0xFF0F0F29) : Colors.grey.shade300,
             width: 2,
           ),
           boxShadow: isSelected
               ? [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ]
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ]
               : [],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 30, color: const Color(0xFF114195)),
+            Icon(icon, size: 30, color: const Color(0xFF0F0F29)),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -110,7 +117,8 @@ class _PaymentPageState extends State<PaymentPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -122,7 +130,7 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: const Color(0xFF114195),
+              color: const Color(0xFF0F0F29),
             ),
           ],
         ),

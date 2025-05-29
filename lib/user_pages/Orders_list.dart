@@ -12,7 +12,7 @@ class ToOrderListItems extends StatelessWidget {
       child: TRoundedContainer(
         showBorder: true,
         padding: const EdgeInsets.all(TSizes.md),
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 15, 15, 41),
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.95,
           height: 120,
@@ -25,25 +25,30 @@ class ToOrderListItems extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.local_shipping, color: AppTheme.primaryColor, size: 24),
+                      const Icon(Icons.local_shipping,
+                          color: Colors.white, size: 24),
                       const SizedBox(width: TSizes.spaceBtwItems),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Order',
-                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: AppTheme.primaryColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
                           Text(
                             '07 Nov 2024',
-                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              color: AppTheme.primaryColor,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                           ),
                         ],
                       ),
@@ -57,7 +62,7 @@ class ToOrderListItems extends StatelessWidget {
               /// Row 2
               Row(
                 children: [
-                  const Icon(Icons.tag, color: AppTheme.primaryColor, size: 24),
+                  const Icon(Icons.tag, color: Colors.white, size: 24),
                   const SizedBox(width: TSizes.spaceBtwItems),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,17 +70,18 @@ class ToOrderListItems extends StatelessWidget {
                       Text(
                         'Order',
                         style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontSize: 16,
-                        ),
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
                       ),
                       Text(
                         '#256f2f',
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: AppTheme.primaryColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),
