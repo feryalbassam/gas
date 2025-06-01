@@ -288,14 +288,15 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
     }
   }
 
-  Future<void> sendNotificationToUser(String userId, String orderId) async {
+  Future<void> sendNotificationToUser(
+      String userId, String orderId, String bodyMessage) async {
     await FirebaseFirestore.instance
         .collection('notifications')
         .doc(userId)
         .collection('user_notifications')
         .add({
-      'title': 'Order #$orderId is confirmed and being prepared 🚚',
-      'body': 'Tap to track your order.',
+      'title': 'Order #$orderId Update',
+      'body': bodyMessage,
       'orderId': orderId,
       'timestamp': Timestamp.now(),
       'read': false,
@@ -386,36 +387,6 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text("Payment Method:",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PaymentPage()),
-                );
-                if (result != null) {
-                  setState(() {
-                    selectedPaymentMethod = result.toString();
-                  });
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 15, 15, 41),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                minimumSize: const Size(double.infinity, 55),
-              ),
-              child: const Text("Choose Payment Method",
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            ),
-            const SizedBox(height: 10),
-            Text("Selected: $selectedPaymentMethod",
-                style: const TextStyle(fontSize: 14)),
-            const SizedBox(height: 20),
             Text("Total Price: ${totalPrice.toStringAsFixed(2)} JD",
                 style:
                     const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
@@ -430,23 +401,23 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
 
                   if (userId == null) return;
 
-                  final userDoc = await FirebaseFirestore.instance
+                  final userDocRef = FirebaseFirestore.instance
                       .collection('users')
-                      .doc(userId)
-                      .get();
+                      .doc(userId);
 
-                  final userLocation = userDoc['location'];
-                  final customerName =
-                      userDoc['name'] ?? 'Unnamed'; // ✅ Extract name
+                  final refreshedUserDoc = await userDocRef.get();
+
+                  final userLocation = refreshedUserDoc['location'];
+                  final customerName = refreshedUserDoc['name'] ?? 'Unnamed';
 
                   final orderData = {
                     'userId': userId,
-                    'customerName': customerName, // ✅ Add to order
+                    'customerName': customerName,
                     'quantity': quantity,
                     'address': addressController.text,
                     'totalPrice': totalPrice,
                     'status': 'pending',
-                    'paymentMethod': selectedPaymentMethod,
+                    'paymentMethod': '',
                     'trackingNumber': trackingNumber,
                     'timestamp': FieldValue.serverTimestamp(),
                     'destination': {
@@ -493,6 +464,23 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
                       .collection('orders')
                       .add(orderData);
 
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentPage(orderId: docRef.id),
+                    ),
+                  );
+
+                  if (result != null &&
+                      result is Map &&
+                      result['method'] != null) {
+                    selectedPaymentMethod = result['method'];
+                    await FirebaseFirestore.instance
+                        .collection('orders')
+                        .doc(docRef.id)
+                        .update({'paymentMethod': selectedPaymentMethod});
+                  }
+
                   final driversSnapshot = await FirebaseFirestore.instance
                       .collection('drivers')
                       .get();
@@ -530,7 +518,8 @@ class _OrderPlacementPageState extends State<OrderPlacementPage> {
                     });
                   }
 
-                  await sendNotificationToUser(userId, docRef.id);
+                  await sendNotificationToUser(userId, docRef.id,
+                      'Your order is confirmed and being prepared 🚚');
 
                   Navigator.push(
                     context,

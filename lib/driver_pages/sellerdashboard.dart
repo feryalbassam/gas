@@ -179,6 +179,7 @@ class _SellerDashboardPageState extends State<SellerDashboardPage> {
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gas_on_go/driver_pages/driverdashboard.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
@@ -256,10 +257,9 @@ class _SellerDashboardPageState extends State<SellerDashboardPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeDriverPage(), // or pass driverId if needed
+          builder: (_) => Driverdashboard(), // or pass driverId if needed
         ),
       );
-      // ✅ يرجع إلى صفحة HomeDriverPage
     } catch (e) {
       print("Error accepting order: $e");
       ScaffoldMessenger.of(context).showSnackBar(

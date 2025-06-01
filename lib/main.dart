@@ -70,7 +70,9 @@ class MyApp extends StatelessWidget {
         //'/route_optimization': (context) => const RouteOptimizationPage(),
         '/order_placement': (context) => const OrderPlacementPage(),
         '/order_tracking': (context) => OrderTrackingScreen(orderId: ''),
-        '/payment': (context) => const PaymentPage(),
+        '/payment': (context) => const PaymentPage(
+              orderId: '',
+            ),
         '/edit_profile': (context) => const EditProfilePage(),
         '/notification': (context) => const NotificationsPage(),
       },

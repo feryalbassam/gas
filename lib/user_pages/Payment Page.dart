@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+  final String orderId;
+
+  const PaymentPage({super.key, required this.orderId});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -9,9 +12,123 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   String _selectedMethod = 'cash';
+  late TextEditingController _cardNumberController;
+  late TextEditingController _expiryController;
+  late TextEditingController _cvvController;
 
-  void _handleContinue() {
-    Navigator.pop(context, {'method': _selectedMethod});
+  String? cardNumberError;
+  String? expiryError;
+  String? cvvError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _cardNumberController = TextEditingController();
+    _expiryController = TextEditingController();
+    _cvvController = TextEditingController();
+
+    _expiryController.addListener(() {
+      final text = _expiryController.text.replaceAll('/', '');
+      if (text.length == 2 && !_expiryController.text.contains('/')) {
+        _expiryController.value = TextEditingValue(
+          text: '${text.substring(0, 2)}/${text.substring(2)}',
+          selection: TextSelection.collapsed(offset: 3),
+        );
+      }
+    });
+
+    _cardNumberController.addListener(() {
+      final digits = _cardNumberController.text.replaceAll(RegExp(r'\D'), '');
+      final formatted = digits
+          .replaceAllMapped(RegExp(r'.{1,4}'), (match) => '${match.group(0)} ')
+          .trimRight();
+
+      _cardNumberController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    });
+
+    _cvvController.addListener(() {
+      final digits = _cvvController.text.replaceAll(RegExp(r'\D'), '');
+      final limited = digits.length > 3 ? digits.substring(0, 3) : digits;
+
+      _cvvController.value = TextEditingValue(
+        text: limited,
+        selection: TextSelection.collapsed(offset: limited.length),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _expiryController.dispose();
+    _cvvController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleContinue() async {
+    if (_selectedMethod == 'card') {
+      setState(() {
+        cardNumberError = null;
+        expiryError = null;
+        cvvError = null;
+      });
+
+      final cardNumber = _cardNumberController.text.replaceAll(' ', '').trim();
+      final expiry = _expiryController.text.trim();
+      final cvv = _cvvController.text.trim();
+
+      bool hasError = false;
+
+      if (cardNumber.length != 16 || int.tryParse(cardNumber) == null) {
+        setState(() {
+          cardNumberError = "Card number must be 16 digits";
+        });
+        hasError = true;
+      }
+
+      final expiryRegExp = RegExp(r'^(0[1-9]|1[0-2])/\d{2}$');
+      if (!expiryRegExp.hasMatch(expiry)) {
+        setState(() {
+          expiryError = "Expiry must be in MM/YY format";
+        });
+        hasError = true;
+      }
+
+      if (cvv.length != 3 || int.tryParse(cvv) == null) {
+        setState(() {
+          cvvError = "CVV must be 3 digits";
+        });
+        hasError = true;
+      }
+
+      if (hasError) return;
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.orderId)
+          .update({
+        'paymentMethod': _selectedMethod,
+        'paymentTimestamp': FieldValue.serverTimestamp(),
+        if (_selectedMethod == 'card')
+          'cardInfo': {
+            'number': _cardNumberController.text,
+            'expiry': _expiryController.text,
+            'cvv': _cvvController.text,
+          },
+      });
+
+      Navigator.pop(context, {'method': _selectedMethod});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save payment method: $e")),
+      );
+    }
   }
 
   @override
@@ -28,7 +145,7 @@ class _PaymentPageState extends State<PaymentPage> {
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +161,79 @@ class _PaymentPageState extends State<PaymentPage> {
               title: 'Cash on Delivery',
               subtitle: 'Pay in cash when the order arrives.',
             ),
-            const Spacer(),
+            const SizedBox(height: 16),
+            _buildPaymentCard(
+              value: 'card',
+              icon: Icons.credit_card,
+              title: 'Credit/Debit Card',
+              subtitle: 'Pay using your credit or debit card.',
+            ),
+            const SizedBox(height: 20),
+            if (_selectedMethod == 'card') ...[
+              const Text(
+                "Card Details",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _cardNumberController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: "Card Number",
+                        prefixIcon: const Icon(Icons.credit_card),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorText: cardNumberError,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _expiryController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: InputDecoration(
+                        labelText: "Expiry Date (MM/YY)",
+                        prefixIcon: const Icon(Icons.date_range),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorText: expiryError,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _cvvController,
+                      keyboardType: TextInputType.number,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: "CVV",
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorText: cvvError,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -83,6 +272,15 @@ class _PaymentPageState extends State<PaymentPage> {
       onTap: () {
         setState(() {
           _selectedMethod = value;
+
+          if (value == 'cash') {
+            _cardNumberController.clear();
+            _expiryController.clear();
+            _cvvController.clear();
+            cardNumberError = null;
+            expiryError = null;
+            cvvError = null;
+          }
         });
       },
       child: AnimatedContainer(

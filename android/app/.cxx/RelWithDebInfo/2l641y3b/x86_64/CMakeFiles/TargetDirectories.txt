@@ -1,0 +1,2 @@
+C:/Users/adamb/StudioProjects/gas_on_go/flutter_app/android/app/.cxx/RelWithDebInfo/2l641y3b/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/adamb/StudioProjects/gas_on_go/flutter_app/android/app/.cxx/RelWithDebInfo/2l641y3b/x86_64/CMakeFiles/rebuild_cache.dir

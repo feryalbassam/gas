@@ -535,13 +535,36 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
       if (snapshot.docs.isNotEmpty) {
         final doc = snapshot.docs.first;
         final data = doc.data() as Map<String, dynamic>;
+
         setState(() {
           orderId = doc.id;
           destination =
               LatLng(data['destination']['lat'], data['destination']['lng']);
         });
+
         _fetchRoute();
+        _listenToOrderCancellation(); // ✅ Now it will track cancellation for this order
       } else {
+        setState(() {
+          orderId = null;
+          destination = null;
+          _route = [];
+        });
+      }
+    });
+  }
+
+  void _listenToOrderCancellation() {
+    if (orderId == null) return;
+    FirebaseFirestore.instance
+        .collection('orders')
+        .doc(orderId)
+        .snapshots()
+        .listen((doc) {
+      if (doc.exists && doc.data()?['status'] == 'cancelled') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("❌ The user has cancelled the order.")),
+        );
         setState(() {
           orderId = null;
           destination = null;
@@ -554,6 +577,9 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
   Future<void> _fetchRoute() async {
     if (driverLocation == null || destination == null) return;
 
+    print(
+        "Fetching route from: ${driverLocation!.latitude},${driverLocation!.longitude} to ${destination!.latitude},${destination!.longitude}");
+
     final url = Uri.parse('http://router.project-osrm.org/route/v1/driving/'
         '${driverLocation!.longitude},${driverLocation!.latitude};'
         '${destination!.longitude},${destination!.latitude}?overview=full&geometries=polyline');
@@ -562,10 +588,80 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final geometry = data['routes'][0]['geometry'];
+      print("Geometry: $geometry");
+
       PolylinePoints polylinePoints = PolylinePoints();
       List<PointLatLng> decoded = polylinePoints.decodePolyline(geometry);
+
+      print("Decoded points: ${decoded.length}");
+
       setState(() {
         _route = decoded.map((e) => LatLng(e.latitude, e.longitude)).toList();
+      });
+    } else {
+      print("Failed to fetch route: ${response.statusCode}");
+    }
+  }
+
+  Future<void> sendCancellationNotificationToUser(
+      String userId, String orderId) async {
+    await FirebaseFirestore.instance
+        .collection('notifications')
+        .doc(userId)
+        .collection('user_notifications')
+        .add({
+      'title': 'Order Cancelled ❌',
+      'body': 'The driver cancelled your order #$orderId.',
+      'orderId': orderId,
+      'timestamp': Timestamp.now(),
+      'read': false,
+    });
+  }
+
+  Future<void> _cancelOrderByDriver() async {
+    if (orderId == null) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Cancel Order"),
+        content: const Text("Are you sure you want to cancel this order?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("No")),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Yes")),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final orderDoc =
+        FirebaseFirestore.instance.collection('orders').doc(orderId);
+    final orderSnapshot = await orderDoc.get();
+
+    if (orderSnapshot.exists) {
+      final data = orderSnapshot.data()!;
+      final userId = data['userId'];
+
+      await orderDoc.update({
+        'status': 'cancelled_by_driver',
+        'cancelledAt': Timestamp.now(),
+      });
+
+      await sendCancellationNotificationToUser(userId, orderId!);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Order has been cancelled.")),
+      );
+
+      setState(() {
+        orderId = null;
+        destination = null;
+        _route = [];
       });
     }
   }
@@ -588,12 +684,10 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            "Driver Home",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        title: const Text("Seller Map",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 15, 15, 41),
         actions: [
           IconButton(
@@ -609,11 +703,16 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
                 ),
               );
             },
-          )
+          ),
+          if (orderId != null)
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.white),
+              onPressed: _cancelOrderByDriver,
+            ),
         ],
       ),
       body: driverLocation == null
-          ? const Center(child: Text("🚚 Waiting for driver location..."))
+          ? const Center(child: Text("🚚 Waiting for Seller location..."))
           : Stack(
               children: [
                 FlutterMap(
@@ -627,7 +726,9 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
                       urlTemplate:
                           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     ),
-                    if (_route.isNotEmpty)
+                    if (_route.isNotEmpty &&
+                        driverLocation != null &&
+                        destination != null)
                       PolylineLayer(
                         polylines: [
                           Polyline(

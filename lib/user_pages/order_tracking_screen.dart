@@ -573,7 +573,6 @@ import 'package:gas_on_go/user_pages/Dashboard.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:gas_on_go/user_pages/rating.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
@@ -637,17 +636,56 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
+  Future<void> cancelOrder() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Cancel Order"),
+        content: const Text("Are you sure you want to cancel this order?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("No"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Yes, Cancel"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.orderId)
+          .update({
+        'status': 'cancelled',
+        'cancelledAt': FieldValue.serverTimestamp()
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order has been cancelled.")),
+        );
+        Navigator.pop(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 253, 253, 253),
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           color: Colors.white,
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard()));
+              context,
+              MaterialPageRoute(builder: (context) => const Dashboard()),
+            );
           },
         ),
         backgroundColor: const Color.fromARGB(255, 15, 15, 41),
@@ -658,6 +696,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
                 color: Colors.white)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.cancel, color: Colors.white),
+            onPressed: cancelOrder,
+            tooltip: "Cancel Order",
+          ),
+        ],
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
@@ -687,6 +732,49 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
           orderStatus = data['status'];
           hasRated = data['rated'] == true;
+
+          // ✅ حالة إلغاء الطلب من قبل السائق
+          if (orderStatus == "cancelled_by_driver") {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.cancel, color: Colors.red, size: 80),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "The driver has cancelled your order ",
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 15, 15, 41),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                    icon: const Icon(
+                      Icons.home,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      "Back to Home",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 15, 15, 41),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const Dashboard()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
 
           if (orderStatus == "completed" && !hasRated) {
             Future.delayed(Duration.zero, () {
