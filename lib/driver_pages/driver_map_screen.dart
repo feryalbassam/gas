@@ -554,6 +554,19 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
     });
   }
 
+  void _goToMyLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) return;
+
+    final pos = await Geolocator.getCurrentPosition();
+
+    setState(() {
+      driverLocation = LatLng(pos.latitude, pos.longitude);
+      mapController.move(driverLocation!, _currentZoom);
+    });
+  }
+
   void _listenToOrderCancellation() {
     if (orderId == null) return;
     FirebaseFirestore.instance
@@ -767,15 +780,32 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
                       FloatingActionButton(
                         mini: true,
                         heroTag: "zoomIn",
+                        backgroundColor: Colors.white,
                         onPressed: _zoomIn,
-                        child: const Icon(Icons.zoom_in),
+                        child: const Icon(
+                          Icons.zoom_in,
+                          color: Colors.black,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       FloatingActionButton(
                         mini: true,
                         heroTag: "zoomOut",
+                        backgroundColor: Colors.white,
                         onPressed: _zoomOut,
-                        child: const Icon(Icons.zoom_out),
+                        child: const Icon(
+                          Icons.zoom_out,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      FloatingActionButton(
+                        mini: true,
+                        heroTag: "myLocation",
+                        backgroundColor: Colors.white,
+                        onPressed: _goToMyLocation,
+                        child:
+                            const Icon(Icons.my_location, color: Colors.black),
                       ),
                     ],
                   ),
