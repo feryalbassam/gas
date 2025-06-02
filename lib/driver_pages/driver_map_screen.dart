@@ -758,14 +758,14 @@ class _HomeDriverPageState extends State<HomeDriverPage> {
                           width: 40,
                           height: 40,
                           child: const Icon(Icons.local_shipping,
-                              color: Colors.green, size: 40),
+                              color: Color.fromARGB(255, 15, 15, 41), size: 40),
                         ),
                         if (destination != null)
                           Marker(
                             point: destination!,
                             width: 40,
                             height: 40,
-                            child: const Icon(Icons.flag,
+                            child: const Icon(Icons.location_pin,
                                 color: Colors.red, size: 40),
                           ),
                       ],
