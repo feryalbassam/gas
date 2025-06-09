@@ -319,21 +319,21 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
-class DriverDeliveryScreen extends StatefulWidget {
+class SellerDeliveryScreen extends StatefulWidget {
   final String orderId;
   final String driverId;
 
-  const DriverDeliveryScreen({
+  const SellerDeliveryScreen({
     super.key,
     required this.orderId,
     required this.driverId,
   });
 
   @override
-  State<DriverDeliveryScreen> createState() => _DriverDeliveryScreenState();
+  State<SellerDeliveryScreen> createState() => _SellerDeliveryScreenState();
 }
 
-class _DriverDeliveryScreenState extends State<DriverDeliveryScreen> {
+class _SellerDeliveryScreenState extends State<SellerDeliveryScreen> {
   LatLng? driverLocation;
   LatLng? destination;
   List<LatLng> _route = [];

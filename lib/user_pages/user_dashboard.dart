@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_pages/inventory_page.dart';
-import 'package:gas_on_go/driver_pages/homedriver_page.dart';
-import 'package:gas_on_go/driver_pages/profiledriver_page.dart';
-import 'package:gas_on_go/driver_pages/earning_page.dart';
-import 'package:gas_on_go/user_pages/home_page.dart';
-import 'package:gas_on_go/user_pages/order_tracking_screen.dart';
-import 'package:gas_on_go/user_pages/profile.dart';
-import 'package:gas_on_go/user_pages/profile_screen.dart';
+import 'package:gas_on_go/user_pages/user_homepage.dart';
+import 'package:gas_on_go/user_pages/user_profile.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -17,7 +11,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
-  //bool isDriver = true;
   late TabController controller;
   int indexSelected = 0;
 
@@ -31,7 +24,7 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 2, vsync: this); // ✅ Match to 2 pages
+    controller = TabController(length: 2, vsync: this);
   }
 
   @override

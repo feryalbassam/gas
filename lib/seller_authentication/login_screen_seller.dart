@@ -1,23 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_authentication/signup_screen_driver.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gas_on_go/driver_pages/driverdashboard.dart';
-import 'package:gas_on_go/user_pages/Dashboard.dart';
-
+import 'package:gas_on_go/seller_authentication/signup_screen_seller.dart';
+import 'package:gas_on_go/seller_pages/sellerdashboard.dart';
 import '../methods/common_methods.dart';
 import '../welcome/welcome_page.dart';
 import '../widgets/loading_dialog.dart';
 
-class LoginScreenDriver extends StatefulWidget {
-  const LoginScreenDriver({super.key});
+class LoginScreenSeller extends StatefulWidget {
+  const LoginScreenSeller({super.key});
 
   @override
-  State<LoginScreenDriver> createState() => _LoginScreenDriverState();
+  State<LoginScreenSeller> createState() => _LoginScreenSellerState();
 }
 
-class _LoginScreenDriverState extends State<LoginScreenDriver> {
+class _LoginScreenSellerState extends State<LoginScreenSeller> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   late bool securetext;
@@ -59,7 +56,7 @@ class _LoginScreenDriverState extends State<LoginScreenDriver> {
       if (role == 'seller') {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Driverdashboard()),
+          MaterialPageRoute(builder: (context) => Sellerdashboard()),
         );
       } else {
         cMethods.displaySnackBar('Access denied: not a seller.', context);
@@ -153,9 +150,7 @@ class _LoginScreenDriverState extends State<LoginScreenDriver> {
                         ),
                         child: const Text(
                           'Login',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 188, 186, 186),
-                              fontSize: 17),
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
                     ],
@@ -167,7 +162,7 @@ class _LoginScreenDriverState extends State<LoginScreenDriver> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SignUpScreenDriver()),
+                          builder: (context) => const SignUpScreenSeller()),
                     );
                   },
                   child: const Text(

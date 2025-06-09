@@ -2,13 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/authentication/login_screen.dart';
-import 'package:gas_on_go/user_pages/Dashboard.dart';
-import 'package:gas_on_go/user_pages/home_page.dart';
-
+import 'package:gas_on_go/user_pages/user_dashboard.dart';
 import '../methods/common_methods.dart';
 import '../welcome/welcome_page.dart';
 import '../widgets/loading_dialog.dart';
+import 'login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -207,9 +205,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         child: const Text(
                           'Sign Up',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 188, 186, 186),
-                              fontSize: 17),
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
                     ],

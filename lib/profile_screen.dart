@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:image_picker/image_picker.dart';
@@ -243,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-}
+}*/
 
 /*import 'dart:io';
 import 'package:flutter/material.dart';

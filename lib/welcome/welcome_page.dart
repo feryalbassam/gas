@@ -1,14 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/authentication/login_screen.dart';
-import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
-import 'package:gas_on_go/driver_pages/driverdashboard.dart';
-import 'package:gas_on_go/driver_pages/homedriver_page.dart';
-import 'package:gas_on_go/pages/map.dart';
-import 'package:gas_on_go/user_pages/Dashboard.dart';
-import 'package:gas_on_go/user_pages/home_page.dart';
+import 'package:gas_on_go/seller_authentication/login_screen_seller.dart';
+import 'package:gas_on_go/seller_pages/sellerdashboard.dart';
+import 'package:gas_on_go/user_pages/user_dashboard.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
+import '../user_authentication/login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -145,8 +142,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         MaterialPageRoute(
                             builder: (context) =>
                                 FirebaseAuth.instance.currentUser == null
-                                    ? LoginScreenDriver()
-                                    : Driverdashboard()),
+                                    ? LoginScreenSeller()
+                                    : Sellerdashboard()),
                       );
                     },
                     child: const Text(

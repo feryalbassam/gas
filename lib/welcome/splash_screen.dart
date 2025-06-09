@@ -1,6 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/authentication/login_screen.dart';
 import 'package:gas_on_go/welcome/welcome_page.dart';
 import 'package:lottie/lottie.dart';
 

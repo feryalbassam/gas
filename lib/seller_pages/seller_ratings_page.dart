@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class DriverRatingsPage extends StatelessWidget {
-  const DriverRatingsPage({super.key});
+class SellerRatingsPage extends StatelessWidget {
+  const SellerRatingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

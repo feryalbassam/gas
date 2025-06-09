@@ -1,24 +1,19 @@
-import 'dart:async';
+/*import 'dart:async';
 import 'dart:convert';
-
-//import 'dart:nativewrappers/_internal/vm/lib/typed_data_patch.dart';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import '../gloabl/global_var.dart';
-import '../user_pages/order_placement.dart';
 
-class HomedriverPage extends StatefulWidget {
-  const HomedriverPage({super.key});
+class HomesellerPage extends StatefulWidget {
+  const HomesellerPage({super.key});
 
   @override
-  State<HomedriverPage> createState() => _HomedriverPageState();
+  State<HomesellerPage> createState() => _HomesellerPageState();
 }
 
-class _HomedriverPageState extends State<HomedriverPage> {
+class _HomesellerPageState extends State<HomesellerPage> {
   final Completer<GoogleMapController> googleMapCompleterController =
       Completer<GoogleMapController>();
   GoogleMapController? controllerGoogleMap;
@@ -75,3 +70,4 @@ class _HomedriverPageState extends State<HomedriverPage> {
     );
   }
 }
+*/

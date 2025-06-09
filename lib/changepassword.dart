@@ -77,6 +77,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Change Password"),
+        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 15, 15, 41),
         foregroundColor: Colors.white,
       ),
@@ -91,7 +92,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'New Password'),
                 validator: (value) =>
-                    value != null && value.length < 6 ? 'Min 6 chars' : null,
+                    value != null && value.length < 8 ? 'Min 8 chars' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(

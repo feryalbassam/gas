@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gas_on_go/authentication/signup_screen.dart';
-import 'package:gas_on_go/user_pages/Dashboard.dart';
-import 'package:gas_on_go/user_pages/home_page.dart';
-
+import 'package:gas_on_go/user_authentication/signup_screen.dart';
+import 'package:gas_on_go/user_pages/user_dashboard.dart';
 import '../methods/common_methods.dart';
 import '../welcome/welcome_page.dart';
 import '../widgets/loading_dialog.dart';
@@ -153,9 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: const Text(
                           'Login',
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 188, 186, 186),
-                              fontSize: 17),
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
                     ],

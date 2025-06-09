@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:gas_on_go/splash_screen.dart';
+/*import 'package:flutter/material.dart';
+import 'package:gas_on_go/welcome/splash_screen.dart';
 import 'package:gas_on_go/user_pages/Orders_list.dart';
 import 'package:gas_on_go/theme/sizes.dart';
 import 'package:gas_on_go/theme/app_theme.dart';
@@ -45,4 +45,4 @@ class OrderScreen extends StatelessWidget {
       ),
     );
   }
-}
+}*/

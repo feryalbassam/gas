@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class EditDriverProfileScreen extends StatefulWidget {
-  const EditDriverProfileScreen({Key? key}) : super(key: key);
+class EditSellerProfileScreen extends StatefulWidget {
+  const EditSellerProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<EditDriverProfileScreen> createState() =>
-      _EditDriverProfileScreenState();
+  State<EditSellerProfileScreen> createState() =>
+      _EditSellerProfileScreenState();
 }
 
-class _EditDriverProfileScreenState extends State<EditDriverProfileScreen> {
+class _EditSellerProfileScreenState extends State<EditSellerProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();

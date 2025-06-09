@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
-import 'Dashboard.dart';
+import 'user_dashboard.dart';
 
 class RatingPage extends StatefulWidget {
   final String orderId;
@@ -60,8 +59,11 @@ class _RatingPageState extends State<RatingPage> {
       appBar: AppBar(
         title: const Text(
           "Rate Your Delivery",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
+        centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 15, 15, 41),
       ),
       body: Padding(

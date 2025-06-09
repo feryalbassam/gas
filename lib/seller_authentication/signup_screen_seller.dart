@@ -2,22 +2,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
-import 'package:gas_on_go/driver_pages/driverdashboard.dart';
-import 'package:gas_on_go/user_pages/Dashboard.dart';
-
+import 'package:gas_on_go/seller_authentication/login_screen_seller.dart';
 import '../methods/common_methods.dart';
+import '../seller_pages/sellerdashboard.dart';
 import '../welcome/welcome_page.dart';
 import '../widgets/loading_dialog.dart';
 
-class SignUpScreenDriver extends StatefulWidget {
-  const SignUpScreenDriver({super.key});
+class SignUpScreenSeller extends StatefulWidget {
+  const SignUpScreenSeller({super.key});
 
   @override
-  State<SignUpScreenDriver> createState() => _SignUpScreenDriverState();
+  State<SignUpScreenSeller> createState() => _SignUpScreenSellerState();
 }
 
-class _SignUpScreenDriverState extends State<SignUpScreenDriver> {
+class _SignUpScreenSellerState extends State<SignUpScreenSeller> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
@@ -110,7 +108,7 @@ class _SignUpScreenDriverState extends State<SignUpScreenDriver> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Driverdashboard()),
+      MaterialPageRoute(builder: (context) => Sellerdashboard()),
     );
   }
 
@@ -238,7 +236,7 @@ class _SignUpScreenDriverState extends State<SignUpScreenDriver> {
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 188, 186, 186),
+                            color: Colors.white,
                             fontSize: 17,
                           ),
                         ),
@@ -252,7 +250,7 @@ class _SignUpScreenDriverState extends State<SignUpScreenDriver> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const LoginScreenDriver()),
+                          builder: (context) => const LoginScreenSeller()),
                     );
                   },
                   child: const Text(

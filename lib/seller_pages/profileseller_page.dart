@@ -1,22 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:gas_on_go/driver_pages/changedriverpassword.dart';
+import 'package:gas_on_go/changepassword.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:gas_on_go/driver_authentication/login_screen_driver.dart';
+import '../seller_authentication/login_screen_seller.dart';
+import 'editsellerprofilepage.dart';
 
-import 'editdriverprofilescreen.dart';
-
-class ProfiledriverPage extends StatefulWidget {
-  const ProfiledriverPage({Key? key}) : super(key: key);
+class ProfilesellerPage extends StatefulWidget {
+  const ProfilesellerPage({Key? key}) : super(key: key);
 
   @override
-  State<ProfiledriverPage> createState() => _ProfiledriverPageState();
+  State<ProfilesellerPage> createState() => _ProfilesellerPageState();
 }
 
-class _ProfiledriverPageState extends State<ProfiledriverPage> {
+class _ProfilesellerPageState extends State<ProfilesellerPage> {
   File? _imageFile;
   Map? driverData;
 
@@ -70,7 +69,7 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreenDriver()),
+      MaterialPageRoute(builder: (_) => const LoginScreenSeller()),
       (route) => false,
     );
   }
@@ -155,7 +154,7 @@ class _ProfiledriverPageState extends State<ProfiledriverPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const EditDriverProfileScreen()),
+                      builder: (context) => const EditSellerProfileScreen()),
                 );
               },
               child: Container(

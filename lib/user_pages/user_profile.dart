@@ -4,9 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
-import '../authentication/login_screen.dart';
-import '../driver_pages/changedriverpassword.dart';
+import '../changepassword.dart';
+import '../user_authentication/login_screen.dart';
 import 'edit_profile_page.dart';
 import 'notification_page.dart';
 
@@ -150,8 +149,6 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 30),
             _buildInfoTile(Icons.email, email),
             _buildInfoTile(Icons.phone, phone),
-
-            // ✅ زر Edit Profile
             GestureDetector(
               onTap: () {
                 Navigator.push(context,
@@ -159,8 +156,6 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: _buildActionTile(Icons.person_outline, "Edit Profile"),
             ),
-
-            // ✅ زر Change Password
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -170,8 +165,6 @@ class _ProfilePageState extends State<ProfilePage> {
               },
               child: _buildActionTile(Icons.lock_outline, "Change Password"),
             ),
-
-            // ✅ زر Notifications
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -182,8 +175,6 @@ class _ProfilePageState extends State<ProfilePage> {
               child: _buildActionTile(
                   Icons.notifications_none, "My Notifications"),
             ),
-
-            // ✅ زر تسجيل الخروج
             ElevatedButton.icon(
               onPressed: signOut,
               icon: const Icon(Icons.logout, color: Colors.white),
